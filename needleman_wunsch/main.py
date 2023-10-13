@@ -31,17 +31,17 @@ for i, char in enumerate(seq_col):
     empty_row = [char, (i + 1) * -gap] + [None for _ in range(len(seq_col) + 1)]
     result_matrix.append(empty_row)
 
-# Initialize matrix with directions taken:
+# Initialize matrix with directions we've taken so we can go back along them later:
 direction_matrix = [
-        [[], [], *list(seq_row)],
-        [None] + [['→'] for _ in range(len(seq_col) + 2)],
+        [set(), set(), *list(seq_row)],
+        [None] + [{'→'} for _ in range(len(seq_col) + 2)],
     ]
 for i, char in enumerate(seq_col):
-    empty_row = [char, ['↓']] + [[] for _ in range(len(seq_col) + 1)]
+    empty_row = [char, {'↓'}] + [set() for _ in range(len(seq_col) + 1)]
     direction_matrix.append(empty_row)
 
-# Special case: initial 0
-direction_matrix[1][1] = ['→', '↓', '↘']
+# Special case: initial 0 is the starting point of all paths:
+direction_matrix[1][1] = {'→', '↓', '↘'}
 
 if show_steps:
     print("Initial state:")
@@ -74,11 +74,11 @@ for row_index in range(2, len(seq_row) + 2):
         result_matrix[col_index][row_index] = best_candidate
 
         if best_candidate == diag_candidate:
-            direction_matrix[col_index - 1][row_index - 1].append('↘')
+            direction_matrix[col_index - 1][row_index - 1].add('↘')
         elif best_candidate == left_candidate:
-            direction_matrix[col_index    ][row_index - 1].append('→')
+            direction_matrix[col_index    ][row_index - 1].add('→')
         else:
-            direction_matrix[col_index - 1][row_index    ].append('↓')
+            direction_matrix[col_index - 1][row_index    ].add('↓')
 
         if show_steps:
             print(f"\nStep {step_count}")
@@ -98,6 +98,8 @@ for row_index in range(2, len(seq_row) + 2):
 
 print("Filled in:")
 print(tabulate(result_matrix, tablefmt="grid"))
+print("Paths taken:")
+print(tabulate(direction_matrix, tablefmt="grid"))
 
 col_index = len(seq_col) + 1
 row_index = len(seq_row) + 1
@@ -109,7 +111,7 @@ while row_index > 1 or col_index > 1:
     formatted_matrix = copy.deepcopy(result_matrix)
     best_candidate = None
 
-    if row_index > 1 and col_index > 1 and direction_matrix[col_index - 1][row_index - 1].count('↘') > 0:
+    if row_index > 1 and col_index > 1 and '↘' in direction_matrix[col_index - 1][row_index - 1]:
         best_candidate = result_matrix[col_index - 1][row_index - 1]
         formatted_matrix[col_index - 1][row_index - 1] = colored(result_matrix[col_index - 1][row_index - 1], "red")
         print(f"Came from the diagonal: {best_candidate}")
@@ -118,7 +120,7 @@ while row_index > 1 or col_index > 1:
         row_index -= 1
         col_index -= 1
 
-    if row_index > 1 and best_candidate is None and direction_matrix[col_index][row_index - 1].count('→') > 0:
+    if row_index > 1 and best_candidate is None and '→' in direction_matrix[col_index][row_index - 1]:
         best_candidate = result_matrix[col_index][row_index - 1]
         formatted_matrix[col_index][row_index - 1] = colored(result_matrix[col_index][row_index - 1], "red")
         print(f"Came from the left: {best_candidate}")
@@ -126,7 +128,7 @@ while row_index > 1 or col_index > 1:
         aligned_col += '-'
         row_index -= 1
 
-    if col_index > 1 and best_candidate is None and direction_matrix[col_index - 1][row_index].count('↓') > 0:
+    if col_index > 1 and best_candidate is None and '↓' in direction_matrix[col_index - 1][row_index]:
         best_candidate = result_matrix[col_index - 1][row_index]
         formatted_matrix[col_index - 1][row_index] = colored(result_matrix[col_index - 1][row_index], "red")
         print(f"Came from the top: {best_candidate}")
@@ -145,6 +147,6 @@ while row_index > 1 or col_index > 1:
         print(aligned_col[::-1])
         input("Press Enter to continue")
 
-print("Final result:")
+print("\n\nFinal result:")
 print(aligned_row[::-1])
 print(aligned_col[::-1])
