@@ -55,6 +55,8 @@ if show_steps:
 
 step_count = 1
 
+# Loop over the content of the matrix while skipping row/column 0 with the
+# sequences and row/column 1 with the initial gap values:
 for row_index in range(2, len(seq_row) + 2):
     for col_index in range(2, len(seq_col) + 2):
         char_row = seq_row[row_index - 2]
@@ -114,7 +116,7 @@ while row_index > 1 or col_index > 1:
     if row_index > 1 and col_index > 1 and '↘' in direction_matrix[col_index - 1][row_index - 1]:
         best_candidate = result_matrix[col_index - 1][row_index - 1]
         formatted_matrix[col_index - 1][row_index - 1] = raw_format(result_matrix[col_index - 1][row_index - 1], 'r')
-        print(f"Came from the diagonal: {best_candidate}")
+        print(f"\nCame from the diagonal: {best_candidate}")
         aligned_row = seq_row[row_index - 2] + aligned_row
         aligned_col = seq_col[col_index - 2] + aligned_col
         row_index -= 1
@@ -123,7 +125,7 @@ while row_index > 1 or col_index > 1:
     if row_index > 1 and best_candidate is None and '→' in direction_matrix[col_index][row_index - 1]:
         best_candidate = result_matrix[col_index][row_index - 1]
         formatted_matrix[col_index][row_index - 1] = raw_format(result_matrix[col_index][row_index - 1], 'r')
-        print(f"Came from the left: {best_candidate}")
+        print(f"\nCame from the left: {best_candidate}")
         aligned_row = seq_row[row_index - 2] + aligned_row
         aligned_col = '-' + aligned_col
         row_index -= 1
@@ -131,7 +133,7 @@ while row_index > 1 or col_index > 1:
     if col_index > 1 and best_candidate is None and '↓' in direction_matrix[col_index - 1][row_index]:
         best_candidate = result_matrix[col_index - 1][row_index]
         formatted_matrix[col_index - 1][row_index] = raw_format(result_matrix[col_index - 1][row_index], 'r')
-        print(f"Came from the top: {best_candidate}")
+        print(f"\nCame from the top: {best_candidate}")
         aligned_col = seq_col[col_index - 2] + aligned_col
         aligned_row = '-' + aligned_row
         col_index -= 1
