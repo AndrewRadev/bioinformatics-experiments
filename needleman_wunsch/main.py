@@ -1,7 +1,7 @@
 import sys
 import copy
 import blosum
-from termcolor import colored
+from printy import raw_format
 from tabulate import tabulate
 
 if len(sys.argv) < 4:
@@ -47,9 +47,9 @@ if show_steps:
     print("Initial state:")
     formatted_matrix = copy.deepcopy(result_matrix)
     for col_index in range(1, len(seq_col) + 2):
-        formatted_matrix[col_index][1] = colored(str(result_matrix[col_index][1]), "red")
+        formatted_matrix[col_index][1] = raw_format(str(result_matrix[col_index][1]), 'r')
     for row_index in range(1, len(seq_row) + 2):
-        formatted_matrix[1][row_index] = colored(str(result_matrix[1][row_index]), "red")
+        formatted_matrix[1][row_index] = raw_format(str(result_matrix[1][row_index]), 'r')
     print(tabulate(formatted_matrix, tablefmt="grid"))
     input("Press Enter to continue")
 
@@ -89,9 +89,9 @@ for row_index in range(2, len(seq_row) + 2):
             print(f"Best:               {best_candidate}")
 
             formatted_matrix = copy.deepcopy(result_matrix)
-            formatted_matrix[col_index - 1][row_index - 1] = colored(result_matrix[col_index - 1][row_index - 1], "red")
-            formatted_matrix[col_index - 1][row_index    ] = colored(result_matrix[col_index - 1][row_index    ], "red")
-            formatted_matrix[col_index    ][row_index - 1] = colored(result_matrix[col_index    ][row_index - 1], "red")
+            formatted_matrix[col_index - 1][row_index - 1] = raw_format(result_matrix[col_index - 1][row_index - 1], 'r')
+            formatted_matrix[col_index - 1][row_index    ] = raw_format(result_matrix[col_index - 1][row_index    ], 'r')
+            formatted_matrix[col_index    ][row_index - 1] = raw_format(result_matrix[col_index    ][row_index - 1], 'r')
             print(tabulate(formatted_matrix, tablefmt="grid"))
             input("Press Enter to continue")
             step_count += 1
@@ -113,27 +113,27 @@ while row_index > 1 or col_index > 1:
 
     if row_index > 1 and col_index > 1 and '↘' in direction_matrix[col_index - 1][row_index - 1]:
         best_candidate = result_matrix[col_index - 1][row_index - 1]
-        formatted_matrix[col_index - 1][row_index - 1] = colored(result_matrix[col_index - 1][row_index - 1], "red")
+        formatted_matrix[col_index - 1][row_index - 1] = raw_format(result_matrix[col_index - 1][row_index - 1], 'r')
         print(f"Came from the diagonal: {best_candidate}")
-        aligned_row += seq_row[row_index - 2]
-        aligned_col += seq_col[col_index - 2]
+        aligned_row = seq_row[row_index - 2] + aligned_row
+        aligned_col = seq_col[col_index - 2] + aligned_col
         row_index -= 1
         col_index -= 1
 
     if row_index > 1 and best_candidate is None and '→' in direction_matrix[col_index][row_index - 1]:
         best_candidate = result_matrix[col_index][row_index - 1]
-        formatted_matrix[col_index][row_index - 1] = colored(result_matrix[col_index][row_index - 1], "red")
+        formatted_matrix[col_index][row_index - 1] = raw_format(result_matrix[col_index][row_index - 1], 'r')
         print(f"Came from the left: {best_candidate}")
-        aligned_row += seq_row[row_index - 2]
-        aligned_col += '-'
+        aligned_row = seq_row[row_index - 2] + aligned_row
+        aligned_col = '-' + aligned_col
         row_index -= 1
 
     if col_index > 1 and best_candidate is None and '↓' in direction_matrix[col_index - 1][row_index]:
         best_candidate = result_matrix[col_index - 1][row_index]
-        formatted_matrix[col_index - 1][row_index] = colored(result_matrix[col_index - 1][row_index], "red")
+        formatted_matrix[col_index - 1][row_index] = raw_format(result_matrix[col_index - 1][row_index], 'r')
         print(f"Came from the top: {best_candidate}")
-        aligned_col += seq_col[col_index - 2]
-        aligned_row += '-'
+        aligned_col = seq_col[col_index - 2] + aligned_col
+        aligned_row = '-' + aligned_row
         col_index -= 1
 
     if best_candidate is None:
@@ -143,10 +143,10 @@ while row_index > 1 or col_index > 1:
     if show_steps:
         print(tabulate(formatted_matrix, tablefmt="grid"))
         print("Result so far:")
-        print(aligned_row[::-1])
-        print(aligned_col[::-1])
+        print(aligned_row)
+        print(aligned_col)
         input("Press Enter to continue")
 
 print("\n\nFinal result:")
-print(aligned_row[::-1])
-print(aligned_col[::-1])
+print(aligned_row)
+print(aligned_col)
