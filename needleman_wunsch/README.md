@@ -6,7 +6,7 @@ Install dependencies
 $ pip install -r requirements.txt
 ```
 
-Or install them manually: blosum, tabulate, termcolor
+Or install them manually: blosum, tabulate, printy
 
 ## Usage
 
