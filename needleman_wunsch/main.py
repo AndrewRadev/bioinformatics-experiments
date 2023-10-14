@@ -109,6 +109,8 @@ row_index = len(seq_row) + 1
 aligned_row = ""
 aligned_col = ""
 
+# Go backwards from the lower-right corner of the matrix to the upper-left,
+# only along paths we've traversed, as remembered in direction_matrix:
 while row_index > 1 or col_index > 1:
     formatted_matrix = copy.deepcopy(result_matrix)
     best_candidate = None
